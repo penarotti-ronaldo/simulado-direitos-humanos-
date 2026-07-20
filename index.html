@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado Avançado - Direitos Humanos e Legislação (PMPR)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            color: #1a3c6e;
+            border-bottom: 3px solid #1a3c6e;
+            padding-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #555;
+            margin: 10px 0 20px 0;
+            font-size: 16px;
+        }
+
+        .subtitle strong {
+            color: #1a3c6e;
+        }
+
+        .subtitle .nivel {
+            display: inline-block;
+            background: #dc3545;
+            color: #fff;
+            padding: 2px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 8px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #eef2f7;
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .stats-bar span {
+            font-size: 14px;
+            font-weight: bold;
+            color: #1a3c6e;
+        }
+
+        .stats-bar .badge {
+            background: #1a3c6e;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .questao {
+            background: #f8faff;
+            border: 1px solid #dde4f0;
+            border-radius: 10px;
+            padding: 18px 20px 12px 20px;
+            margin: 16px 0;
+            transition: background 0.2s;
+        }
+
+        .questao.correta {
+            background: #e6f7e6;
+            border-color: #28a745;
+        }
+
+        .questao.errada {
+            background: #fde8e8;
+            border-color: #dc3545;
+        }
+
+        .questao .pergunta {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #1a2a4a;
+            line-height: 1.5;
+        }
+
+        .questao .tema {
+            display: inline-block;
+            font-size: 10px;
+            background: #1a3c6e;
+            color: #fff;
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-left: 10px;
+            font-weight: normal;
+            letter-spacing: 0.3px;
+        }
+
+        .questao .tipo {
+            display: inline-block;
+            font-size: 10px;
+            background: #6c757d;
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-left: 6px;
+            font-weight: normal;
+        }
+
+        .questao .tipo.vf {
+            background: #17a2b8;
+        }
+
+        .questao .tipo.me {
+            background: #6f42c1;
+        }
+
+        .questao .dificuldade {
+            display: inline-block;
+            font-size: 10px;
+            background: #fd7e14;
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-left: 6px;
+            font-weight: normal;
+        }
+
+        .alternativas {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .alternativa {
+            background: #fff;
+            border: 2px solid #d0d7e6;
+            border-radius: 8px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 15px;
+        }
+
+        .alternativa:hover:not(.bloqueado) {
+            background: #eaf0fa;
+            border-color: #1a3c6e;
+        }
+
+        .alternativa.correta {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .alternativa.errada {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .alternativa.bloqueado {
+            cursor: default;
+            opacity: 0.9;
+        }
+
+        .alternativa .feedback {
+            display: none;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .alternativa.correta .feedback {
+            display: inline;
+            color: #28a745;
+        }
+
+        .alternativa.errada .feedback {
+            display: inline;
+            color: #dc3545;
+        }
+
+        .alternativa .label {
+            font-weight: bold;
+            color: #555;
+            margin-right: 6px;
+        }
+
+        .resultado {
+            background: #1a3c6e;
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            font-size: 18px;
+        }
+
+        .resultado .acertos {
+            background: #28a745;
+            padding: 6px 18px;
+            border-radius: 30px;
+        }
+
+        .resultado .erros {
+            background: #dc3545;
+            padding: 6px 18px;
+            border-radius: 30px;
+        }
+
+        .resultado .total {
+            background: #6c757d;
+            padding: 6px 18px;
+            border-radius: 30px;
+        }
+
+        .btn-reiniciar {
+            background: #ffc107;
+            color: #1a3c6e;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .btn-reiniciar:hover {
+            background: #e0a800;
+            transform: scale(1.02);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .legenda-temas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin: 15px 0 20px 0;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .legenda-temas span {
+            font-size: 11px;
+            background: #1a3c6e;
+            color: #fff;
+            padding: 3px 12px;
+            border-radius: 20px;
+        }
+
+        .progress-container {
+            background: #e9ecef;
+            border-radius: 20px;
+            height: 10px;
+            margin: 10px 0 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #28a745;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .dica {
+            font-size: 12px;
+            color: #6c757d;
+            font-style: italic;
+            margin-top: 4px;
+            padding: 4px 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .questao.correta .dica,
+        .questao.errada .dica {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            .resultado {
+                flex-direction: column;
+                gap: 8px;
+                font-size: 16px;
+            }
+            .alternativa {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            .legenda-temas span {
+                font-size: 9px;
+                padding: 2px 8px;
+            }
+            .stats-bar {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .questao .pergunta {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h1>⚖️ SIMULADO AVANÇADO</h1>
+        <p class="subtitle"><strong>Direitos Humanos, Legalidade e Atuação Policial - PMPR</strong></p>
+        <p class="subtitle">32 questões de alto nível • 15 V/F + 17 Múltipla Escolha <span class="nivel">⭐ NÍVEL AVANÇADO</span></p>
+        <p class="subtitle" style="font-size:14px; color:#6c757d;">Questões que integram conceitos, legislação e análise crítica</p>
+
+        <div class="legenda-temas">
+            <span>📌 DH</span>
+            <span>⚖️ Legalidade</span>
+            <span>🔫 Uso da Força</span>
+            <span>⛓️ Algemas</span>
+            <span>📜 Abuso</span>
+            <span>🏛️ PMPR</span>
+            <span>📋 Conduta</span>
+            <span>🧠 Integração</span>
+        </div>
+
+        <div class="stats-bar">
+            <span>📊 Progresso: <span id="progresso-texto">0/32</span></span>
+            <span>✅ Acertos: <span id="acertos-parcial">0</span></span>
+            <span>❌ Erros: <span id="erros-parcial">0</span></span>
+            <span class="badge">🎯 Respondidas: <span id="respondidas-parcial">0</span></span>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div id="questoes-container"></div>
+
+        <div class="resultado" id="resultado">
+            <span>✅ <span class="acertos" id="acertos">0</span> ACERTOS</span>
+            <span>❌ <span class="erros" id="erros">0</span> ERROS</span>
+            <span>📊 <span class="total" id="total">0</span> RESPONDIDAS</span>
+        </div>
+
+        <div class="text-center">
+            <button class="btn-reiniciar" onclick="reiniciar()">🔄 REINICIAR SIMULADO</button>
+        </div>
+
+    </div>
+
+    <script>
+        // ================================================================
+        //  DADOS DAS 32 QUESTÕES DE NÍVEL AVANÇADO
+        //  15 V/F + 17 Múltipla Escolha
+        //  Integrando conceitos, legislação e análise crítica
+        // ================================================================
+        var questoesData = [
+            // ============================================================
+            //  V/F 1-5: DIREITOS HUMANOS E GERAÇÕES
+            // ============================================================
+            {
+                id: 1,
+                tema: "DH",
+                pergunta: "A primeira geração dos direitos humanos, marcada pela Magna Carta (1215) e pela Revolução Francesa (1789), possui natureza de direitos 'negativados', pois busca limitar o poder estatal, enquanto a segunda geração, com destaque para a DUDH (1948), impõe ao Estado o dever de atuar positivamente para garantir igualdade material.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true,
+                dica: "A 1ª geração limita o Estado (direitos negativos), a 2ª exige ação estatal (direitos positivos)."
+            },
+            {
+                id: 2,
+                tema: "DH",
+                pergunta: "A terceira geração dos direitos humanos, que abrange direitos difusos como paz e meio ambiente, foi consagrada exclusivamente pela Declaração Universal dos Direitos Humanos (DUDH) de 1948, que já previa esses direitos em seu texto original.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true,
+                dica: "A 3ª geração foi desenvolvida posteriormente por Karel Vasak, não constando na DUDH de 1948."
+            },
+            {
+                id: 3,
+                tema: "DH",
+                pergunta: "A atuação policial baseada nos Direitos Humanos exige que o agente público reconheça o cidadão como titular de direitos, o que implica que a atividade de segurança pública deve ser orientada pela preservação da dignidade humana, mesmo em situações de confronto.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true,
+                dica: "A atuação policial deve sempre preservar a dignidade humana, orientando-se pelos DH."
+            },
+            {
+                id: 4,
+                tema: "DH",
+                pergunta: "A distinção entre direitos de primeira e segunda geração reflete uma evolução histórica linear, na qual os direitos de primeira geração foram integralmente superados pelos de segunda geração, tornando-os obsoletos no constitucionalismo contemporâneo.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true,
+                dica: "As gerações são complementares, não havendo superação integral de uma pela outra."
+            },
+            {
+                id: 5,
+                tema: "DH",
+                pergunta: "O conceito de 'direitos humanos' como conjunto de direitos indispensáveis à vida pautada em liberdade, igualdade e dignidade implica que esses direitos são absolutos e não podem sofrer qualquer restrição, mesmo em situações de estado de exceção.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true,
+                dica: "Direitos humanos podem sofrer restrições em situações excepcionais, desde que respeitados os limites legais."
+            },
+
+            // ============================================================
+            //  V/F 6-10: LEGALIDADE E FORMAÇÃO PM
+            // ============================================================
+            {
+                id: 6,
+                tema: "Legalidade",
+                pergunta: "O princípio da legalidade na administração pública, em sua dimensão positiva, exige que o agente público atue estritamente de acordo com a lei, enquanto a dimensão negativa autoriza o agente a agir em situações não previstas, desde que para proteger o interesse público.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true,
+                dica: "A dimensão negativa limita o agente ao que a lei autoriza; não há autorização para agir fora da lei."
+            },
+            {
+                id: 7,
+                tema: "Legalidade",
+                pergunta: "A formação da Polícia Militar, ao incluir os direitos humanos como base da instrução, reconhece que o policial militar é o primeiro garantidor de direitos, o que implica que sua atuação deve ser orientada pela proteção da dignidade humana, mesmo em operações de uso da força.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true,
+                dica: "O PM é o primeiro garantidor de direitos, devendo orientar sua atuação pela proteção da dignidade."
+            },
+            {
+                id: 8,
+                tema: "Legalidade",
+                pergunta: "O Decreto Federal nº 12.341/2024 estabelece que o policial militar deve utilizar, obrigatoriamente, pelo menos três instrumentos de menor potencial ofensivo em seu serviço, além de disponibilizar EPI para sua proteção.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true,
+                dica: "O decreto exige no mínimo dois instrumentos de menor potencial ofensivo, não três."
+            },
+            {
+                id: 9,
+                tema: "Legalidade",
+                pergunta: "O uso de arma de fogo contra veículo que fura bloqueio policial é absolutamente proibido pelo Decreto nº 12.341/2024, independentemente da situação, pois a norma visa proteger a vida de terceiros.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true,
+                dica: "A proibição tem exceção quando houver risco de morte ou lesão grave."
+            },
+            {
+                id: 10,
+                tema: "Legalidade",
+                pergunta: "A Súmula Vinculante 11 do STF estabelece que o uso de algemas é lícito em três hipóteses: resistência, fundado receio de fuga e perigo à integridade física própria ou alheia, sendo que a justificativa por escrito é dispensável em casos de flagrante delito.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true,
+                dica: "A justificativa por escrito é obrigatória, mesmo em flagrante, conforme a SV 11."
+            },
+
+            // ============================================================
+            //  V/F 11-15: ABUSO DE AUTORIDADE E CONDUTA
+            // ============================================================
+            {
+                id: 11,
+                tema: "Abuso",
+                pergunta: "A Lei nº 13.869/2019 (Abuso de Autoridade) prevê que a condenação por crime de abuso de autoridade pode acarretar a perda do cargo, inabilitação para função pública de 1 a 5 anos e indenização pelos danos causados, sendo essas sanções aplicáveis cumulativamente.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true,
+                dica: "A lei prevê cumulativamente as sanções de perda do cargo, inabilitação e indenização."
+            },
+            {
+                id: 12,
+                tema: "Abuso",
+                pergunta: "A obtenção de prova ilícita por meio de acesso a celular sem autorização judicial, quando realizada por policial militar em serviço, configura crime de abuso de autoridade, nos termos da Lei nº 13.869/2019.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true,
+                dica: "O acesso a celular sem autorização judicial é exemplo de abuso de autoridade."
+            },
+            {
+                id: 13,
+                tema: "Conduta",
+                pergunta: "O militar da ativa pode se filiar a partido político e participar de campanhas, desde que não utilize o uniforme ou sua função para promoção pessoal, conforme a legislação brasileira.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true,
+                dica: "A filiação partidária é vedada ao militar da ativa, conforme a Constituição Federal."
+            },
+            {
+                id: 14,
+                tema: "Conduta",
+                pergunta: "A vedação ao direito de greve para militares estaduais, prevista na Constituição Federal, fundamenta-se na necessidade de preservar a disciplina, a hierarquia e a continuidade dos serviços essenciais de segurança pública.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 0,
+                isVF: true,
+                dica: "A vedação à greve visa preservar a disciplina e a continuidade dos serviços essenciais."
+            },
+            {
+                id: 15,
+                tema: "Conduta",
+                pergunta: "A responsabilização do policial militar pode ocorrer nas esferas criminal, cível e administrativa, de forma independente, sendo que a absolvição na esfera criminal, por falta de provas, impede automaticamente a responsabilização na esfera administrativa.",
+                alternativas: ["Verdadeiro", "Falso"],
+                correta: 1,
+                isVF: true,
+                dica: "As esferas são independentes; a absolvição criminal não impede a responsabilização administrativa."
+            },
+
+            // ============================================================
+            //  M.E. 16-22: DIREITOS HUMANOS E LEGALIDADE
+            // ============================================================
+            {
+                id: 16,
+                tema: "DH",
+                pergunta: "Considerando a evolução histórica dos direitos humanos e sua aplicação no contexto da segurança pública, a afirmação de que o policial militar é o 'primeiro garantidor de direitos' implica que:",
+                alternativas: [
+                    "O policial deve priorizar a aplicação da lei, ainda que isso implique a supressão de direitos individuais.",
+                    "A atuação policial deve ser orientada pela proteção da dignidade humana, equilibrando a segurança pública e os direitos fundamentais.",
+                    "A garantia de direitos é responsabilidade exclusiva do Poder Judiciário, cabendo à polícia apenas a repressão.",
+                    "O policial pode suspender direitos fundamentais em situações de emergência, sem necessidade de justificativa.",
+                    "A proteção de direitos humanos é incompatível com o uso da força, que deve ser totalmente abolido."
+                ],
+                correta: 1,
+                dica: "A atuação policial deve equilibrar segurança pública e direitos fundamentais."
+            },
+            {
+                id: 17,
+                tema: "DH",
+                pergunta: "A relação entre a terceira geração dos direitos humanos (fraternidade e solidariedade) e a atuação da PMPR pode ser compreendida como:",
+                alternativas: [
+                    "A obrigação do Estado em garantir direitos sociais, como saúde e educação, à população.",
+                    "A necessidade de a instituição atuar na proteção de direitos difusos, como o meio ambiente e o patrimônio cultural, em parceria com a comunidade.",
+                    "A imposição de limites absolutos à atuação policial, que deve se restringir a atividades administrativas.",
+                    "A priorização de direitos coletivos em detrimento dos direitos individuais, sempre que houver conflito.",
+                    "A exclusão dos direitos de terceira geração do âmbito de atuação da segurança pública."
+                ],
+                correta: 1,
+                dica: "A 3ª geração envolve direitos difusos, como meio ambiente, que podem ser protegidos pela PMPR."
+            },
+            {
+                id: 18,
+                tema: "Legalidade",
+                pergunta: "O princípio da legalidade, em sua dimensão positiva, aplicado à atividade policial, significa que:",
+                alternativas: [
+                    "O agente público pode agir com discricionariedade para proteger o interesse público, independentemente de lei.",
+                    "A lei serve como fundamento e obrigação para o agir administrativo, exigindo que a atuação policial esteja sempre amparada em norma legal.",
+                    "O policial deve agir apenas quando a lei expressamente autorizar, sendo vedada qualquer atuação subsidiária.",
+                    "A legalidade se limita ao controle judicial da atuação policial, não orientando a conduta do agente.",
+                    "O policial pode exceder os limites legais quando necessário para proteger a sociedade."
+                ],
+                correta: 1,
+                dica: "A dimensão positiva exige que a lei fundamenta e obriga o agir administrativo."
+            },
+            {
+                id: 19,
+                tema: "Legalidade",
+                pergunta: "O Decreto Federal nº 12.341/2024, ao estabelecer diretrizes para o uso de instrumentos de menor potencial ofensivo, determina que:",
+                alternativas: [
+                    "O uso da força deve ser sempre progressivo, iniciando com a menor intensidade possível e compatível com a gravidade da ameaça.",
+                    "O uso de arma de fogo é preferencial em todas as situações de confronto, pois oferece maior segurança ao policial.",
+                    "O policial deve utilizar a força letal imediatamente, sem necessidade de tentar instrumentos menos letais.",
+                    "O uso de força não discriminatória é recomendado, mas não obrigatório, em situações de risco.",
+                    "Apenas um instrumento de menor potencial ofensivo é necessário por profissional em serviço."
+                ],
+                correta: 0,
+                dica: "O decreto estabelece a gradualidade e a compatibilidade com a gravidade da ameaça."
+            },
+            {
+                id: 20,
+                tema: "Legalidade",
+                pergunta: "A Súmula Vinculante 11 do STF, ao tratar do uso de algemas, estabelece que a justificativa por escrito da excepcionalidade é obrigatória, e que seu descumprimento pode gerar:",
+                alternativas: [
+                    "Apenas responsabilidade administrativa, sem repercussões criminais ou cíveis.",
+                    "Responsabilidade disciplinar, civil e penal, além da nulidade do ato processual.",
+                    "A responsabilização exclusiva do superior hierárquico, que autorizou o uso.",
+                    "A impossibilidade de responsabilização criminal, pois o uso de algemas é ato administrativo.",
+                    "A nulidade da prisão, mas sem qualquer sanção ao agente público."
+                ],
+                correta: 1,
+                dica: "O uso indevido de algemas gera responsabilidade nas esferas disciplinar, civil e penal."
+            },
+            {
+                id: 21,
+                tema: "DH",
+                pergunta: "A obrigatoriedade de inclusão de Direitos Humanos na formação de policiais no Brasil tem como fundamento principal a:",
+                alternativas: [
+                    "Lei de Execução Penal (LEP), que exige a capacitação de todos os agentes do sistema de justiça.",
+                    "Matriz Curricular Nacional da Secretaria Nacional de Segurança Pública (SENASP), que estabelece os temas essenciais para a formação em segurança pública.",
+                    "Constituição Federal de 1988, que determina diretamente a inclusão da disciplina em todos os cursos superiores.",
+                    "Lei Maria da Penha, que exige treinamento específico em violência doméstica.",
+                    "Convenção Americana de Direitos Humanos (Pacto de San José da Costa Rica), ratificada pelo Brasil."
+                ],
+                correta: 1,
+                dica: "A Matriz Curricular Nacional da SENASP é o documento que fundamenta a obrigatoriedade dos DH na formação policial."
+            },
+            {
+                id: 22,
+                tema: "DH",
+                pergunta: "Os marcos históricos que caracterizam as três gerações dos direitos humanos são, respectivamente:",
+                alternativas: [
+                    "1ª geração: Queda da Bastilha (direito à vida e julgamento justo); 2ª geração: Pós-guerra e DUDH (direito à propriedade e igualdade social); 3ª geração: Declaração Africana dos Direitos do Homem e dos Povos (direito ao meio ambiente, infância e juventude).",
+                    "1ª geração: Magna Carta (direito à liberdade); 2ª geração: Constituição de Weimar (direito ao trabalho); 3ª geração: Carta de Paris (direito à paz).",
+                    "1ª geração: Revolução Industrial (direito à propriedade); 2ª geração: DUDH (direito à saúde); 3ª geração: Declaração do Rio (direito ao meio ambiente).",
+                    "1ª geração: Declaração da Virgínia (direito à segurança); 2ª geração: Constituição Mexicana (direito à educação); 3ª geração: Carta Africana (direito à autodeterminação).",
+                    "1ª geração: Revolução Francesa (direito à vida); 2ª geração: Pós-guerra (direito à previdência); 3ª geração: Declaração de Viena (direito ao desenvolvimento)."
+                ],
+                correta: 0,
+                dica: "A queda da Bastilha marca a 1ª geração (direito à vida e julgamento justo); o pós-guerra e a DUDH marcam a 2ª geração (propriedade e igualdade social); a Carta Africana marca a 3ª geração (meio ambiente, infância e juventude)."
+            },
+
+            // ============================================================
+            //  M.E. 23-27: ABUSO DE AUTORIDADE E CONDUTA
+            // ============================================================
+            {
+                id: 23,
+                tema: "Abuso",
+                pergunta: "A Lei nº 13.869/2019, ao tipificar o crime de abuso de autoridade, estabelece como conduta criminosa:",
+                alternativas: [
+                    "A prática de ato baseado em suspeita fundamentada, ainda que posteriormente se revele infundada.",
+                    "A submissão de preso a situação vexatória, como a exposição de seu corpo ou a exibição pública.",
+                    "A utilização de algemas em situação de risco de fuga, devidamente justificada por escrito.",
+                    "A invasão de imóvel com mandado judicial, durante o horário diurno.",
+                    "A obtenção de prova com autorização judicial, mesmo que por meio de busca e apreensão."
+                ],
+                correta: 1,
+                dica: "A exposição vexatória do preso é crime de abuso de autoridade."
+            },
+            {
+                id: 24,
+                tema: "Abuso",
+                pergunta: "Os efeitos da condenação por crime de abuso de autoridade, previstos na Lei nº 13.869/2019, incluem:",
+                alternativas: [
+                    "Apenas a pena de multa, sem prejuízo da manutenção do cargo público.",
+                    "A inabilitação para função pública de 1 a 5 anos e a perda do cargo, cumulativamente.",
+                    "A suspensão do exercício do cargo, sem prejuízo da remuneração.",
+                    "A responsabilização exclusivamente na esfera penal, sem reflexos administrativos.",
+                    "A obrigação de indenizar, mas sem perda do cargo público."
+                ],
+                correta: 1,
+                dica: "A condenação pode acarretar inabilitação (1 a 5 anos) e perda do cargo."
+            },
+            {
+                id: 25,
+                tema: "Conduta",
+                pergunta: "A vedação constitucional à sindicalização dos militares estaduais, e a permissão para associação de classe, indicam que:",
+                alternativas: [
+                    "Os militares podem se organizar para reivindicar direitos trabalhistas, como aumento salarial, desde que não haja greve.",
+                    "Os militares têm direito à negociação coletiva, mas não à greve, por serem servidores públicos.",
+                    "A associação de classe é permitida, mas a sindicalização é vedada, mantendo-se a hierarquia e a disciplina.",
+                    "Os militares podem se filiar a sindicatos, desde que não participem de greves.",
+                    "A vedação à sindicalização se aplica apenas a militares da ativa, não aos da reserva."
+                ],
+                correta: 2,
+                dica: "A associação é permitida, mas a sindicalização é vedada aos militares."
+            },
+            {
+                id: 26,
+                tema: "Conduta",
+                pergunta: "A regra de acúmulo de cargos para militares estaduais, prevista na Constituição Federal, estabelece que:",
+                alternativas: [
+                    "É proibido o acúmulo de cargos públicos, exceto nas áreas de saúde, educação ou cargo técnico/científico.",
+                    "É permitido o acúmulo de cargos de professor, desde que haja compatibilidade de horários.",
+                    "O acúmulo de dois cargos de magistério é permitido, independentemente da área de atuação.",
+                    "É permitido o acúmulo de cargos na mesma área, desde que a carga horária total não exceda 40 horas.",
+                    "Não há qualquer restrição ao acúmulo de cargos para militares estaduais."
+                ],
+                correta: 0,
+                dica: "A regra geral é a proibição, com exceções para saúde, educação e cargo técnico/científico."
+            },
+            {
+                id: 27,
+                tema: "Conduta",
+                pergunta: "A situação do militar estadual que se candidata a cargo político, com mais de 10 anos de serviço, resultará em:",
+                alternativas: [
+                    "Afastamento definitivo, com perda do posto e da graduação.",
+                    "Agregação e, se eleito, inatividade na diplomação.",
+                    "Afastamento temporário, com retorno automático ao serviço ativo após as eleições.",
+                    "Licença sem vencimentos, sem alteração da situação militar.",
+                    "Exoneração do cargo, com possibilidade de retorno após o mandato."
+                ],
+                correta: 1,
+                dica: "Com mais de 10 anos, o militar é agregado e, se eleito, vai para a inatividade."
+            },
+
+            // ============================================================
+            //  M.E. 28-32: LEGISLAÇÃO ESPECÍFICA E INTEGRAÇÃO
+            // ============================================================
+            {
+                id: 28,
+                tema: "Integração",
+                pergunta: "A Lei Maria da Penha (Lei nº 11.340/2006) define a violência doméstica e familiar como violação de direitos humanos, abrangendo as modalidades:",
+                alternativas: [
+                    "Física, psicológica, sexual, patrimonial e moral.",
+                    "Física, verbal, econômica e religiosa.",
+                    "Física, psicológica, sexual e social.",
+                    "Física, patrimonial, moral e política.",
+                    "Física, psicológica, institucional e social."
+                ],
+                correta: 0,
+                dica: "A Lei Maria da Penha abrange as modalidades: física, psicológica, sexual, patrimonial e moral."
+            },
+            {
+                id: 29,
+                tema: "Integração",
+                pergunta: "A relação entre Direitos Humanos e o princípio da legalidade na atividade da Polícia Militar pode ser compreendida como:",
+                alternativas: [
+                    "Uma relação de oposição, pois os Direitos Humanos limitam a atuação policial, enquanto a legalidade a autoriza.",
+                    "Uma relação de dependência mútua, na qual a legalidade formal protege os direitos humanos e orienta a atuação policial legítima.",
+                    "Uma relação de indiferença, pois a atuação policial se baseia exclusivamente na lei, sem considerar os direitos humanos.",
+                    "Uma relação hierárquica, na qual os direitos humanos são superiores à legalidade, podendo suspender a lei.",
+                    "Uma relação de subordinação, na qual a legalidade prevalece sobre os direitos humanos em situações de emergência."
+                ],
+                correta: 1,
+                dica: "A legalidade e os DH são dependentes; a legalidade formal protege os DH e orienta a atuação policial."
+            },
+            {
+                id: 30,
+                tema: "Integração",
+                pergunta: "O período da Ditadura Militar (1964-1985) deixou uma herança cultural de oposição entre Segurança Pública e Direitos Humanos, que foi progressivamente superada por:",
+                alternativas: [
+                    "A manutenção do uso da força como método principal de controle social.",
+                    "A implementação do policiamento comunitário nos anos 1990 e a inclusão dos DH nas academias a partir dos anos 2000.",
+                    "A criação de novas leis que autorizam a atuação policial sem limites.",
+                    "A substituição da PM por guardas municipais, que atuam sem armas.",
+                    "A aplicação da Lei de Segurança Nacional para justificar ações policiais."
+                ],
+                correta: 1,
+                dica: "O policiamento comunitário e a inclusão dos DH na formação buscaram mudar o paradigma."
+            },
+            {
+                id: 31,
+                tema: "Integração",
+                pergunta: "A proibição de manter presos de sexos diferentes no mesmo espaço de confinamento, a vedação de exposição vexatória do preso e a obrigatoriedade de apresentação à Audiência de Custódia em até 24 horas são medidas que protegem:",
+                alternativas: [
+                    "A eficiência administrativa do sistema prisional.",
+                    "A dignidade da pessoa humana e a integridade física e moral do preso.",
+                    "A segurança dos agentes penitenciários, que ficam expostos a riscos.",
+                    "O cumprimento estrito da pena, evitando benefícios indevidos.",
+                    "A celeridade processual, reduzindo o número de prisões preventivas."
+                ],
+                correta: 1,
+                dica: "Essas medidas protegem a dignidade e a integridade do preso."
+            },
+            {
+                id: 32,
+                tema: "Integração",
+                pergunta: "A vedação à condução de adolescente em compartimento fechado de veículo policial, prevista no material, fundamenta-se no princípio da:",
+                alternativas: [
+                    "Proteção integral do adolescente, que deve ser tratado com prioridade absoluta.",
+                    "Eficiência operacional, que exige o uso de viaturas adequadas.",
+                    "Prevenção de fugas, que justifica a restrição de movimento.",
+                    "Segurança do adolescente, que pode se ferir durante o transporte.",
+                    "Preservação da imagem da instituição, que não deve ser associada a situações vexatórias."
+                ],
+                correta: 0,
+                dica: "A vedação baseia-se no princípio da proteção integral do adolescente."
+            }
+        ];
+
+        // ================================================================
+        //  ESTADO DA APLICAÇÃO
+        // ================================================================
+        var estado = {
+            respondidas: 0,
+            acertos: 0,
+            erros: 0,
+            bloqueadas: {}
+        };
+
+        var letras = ["A", "B", "C", "D", "E"];
+
+        // ================================================================
+        //  RENDERIZAR QUESTÕES
+        // ================================================================
+        function renderizarQuestoes() {
+            var container = document.getElementById("questoes-container");
+            container.innerHTML = "";
+
+            for (var q = 0; q < questoesData.length; q++) {
+                var questao = questoesData[q];
+                
+                var divQuestao = document.createElement("div");
+                divQuestao.className = "questao";
+                divQuestao.id = "questao-" + questao.id;
+
+                var pergunta = document.createElement("div");
+                pergunta.className = "pergunta";
+                
+                var tipoTexto = questao.isVF ? "V/F" : "M.E.";
+                var tipoClass = questao.isVF ? "vf" : "me";
+                pergunta.innerHTML = questao.id + ". " + questao.pergunta + 
+                    ' <span class="tema">' + questao.tema + '</span>' +
+                    ' <span class="tipo ' + tipoClass + '">' + tipoTexto + '</span>' +
+                    ' <span class="dificuldade">⭐ avançada</span>';
+                divQuestao.appendChild(pergunta);
+
+                var divAlt = document.createElement("div");
+                divAlt.className = "alternativas";
+
+                for (var i = 0; i < questao.alternativas.length; i++) {
+                    var alt = document.createElement("div");
+                    alt.className = "alternativa";
+                    alt.dataset.indice = i;
+                    alt.dataset.questaoId = questao.id;
+                    alt.id = "alt-" + questao.id + "-" + i;
+
+                    var label = document.createElement("span");
+                    label.className = "label";
+                    
+                    if (questao.isVF) {
+                        label.textContent = i === 0 ? "V)" : "F)";
+                    } else {
+                        label.textContent = letras[i] + ")";
+                    }
+                    
+                    alt.appendChild(label);
+
+                    var txt = document.createTextNode(" " + questao.alternativas[i]);
+                    alt.appendChild(txt);
+
+                    var feedback = document.createElement("span");
+                    feedback.className = "feedback";
+                    feedback.textContent = " ✓";
+                    alt.appendChild(feedback);
+
+                    alt.addEventListener("click", function(e) {
+                        var target = e.currentTarget;
+                        var questaoId = parseInt(target.dataset.questaoId);
+                        var indice = parseInt(target.dataset.indice);
+                        responderQuestao(questaoId, indice);
+                    });
+
+                    divAlt.appendChild(alt);
+                }
+
+                divQuestao.appendChild(divAlt);
+
+                // Dica explicativa (aparece após responder)
+                var dicaDiv = document.createElement("div");
+                dicaDiv.className = "dica";
+                if (questao.dica) {
+                    dicaDiv.textContent = "💡 " + questao.dica;
+                }
+                divQuestao.appendChild(dicaDiv);
+
+                container.appendChild(divQuestao);
+            }
+
+            atualizarResultado();
+        }
+
+        // ================================================================
+        //  RESPONDER QUESTÃO
+        // ================================================================
+        function responderQuestao(questaoId, indiceSelecionado) {
+            if (estado.bloqueadas[questaoId]) {
+                return;
+            }
+
+            var questao = null;
+            for (var q = 0; q < questoesData.length; q++) {
+                if (questoesData[q].id === questaoId) {
+                    questao = questoesData[q];
+                    break;
+                }
+            }
+            
+            if (!questao) return;
+
+            var isCorreta = (indiceSelecionado === questao.correta);
+
+            estado.bloqueadas[questaoId] = true;
+            estado.respondidas++;
+
+            if (isCorreta) {
+                estado.acertos++;
+            } else {
+                estado.erros++;
+            }
+
+            var divQuestao = document.getElementById("questao-" + questaoId);
+            if (isCorreta) {
+                divQuestao.className = "questao correta";
+            } else {
+                divQuestao.className = "questao errada";
+            }
+
+            var alternativas = divQuestao.querySelectorAll(".alternativa");
+            for (var i = 0; i < alternativas.length; i++) {
+                alternativas[i].classList.add("bloqueado");
+                if (i === questao.correta) {
+                    alternativas[i].classList.add("correta");
+                } else if (i === indiceSelecionado && !isCorreta) {
+                    alternativas[i].classList.add("errada");
+                }
+                alternativas[i].classList.remove("selecionada");
+            }
+
+            // Mostrar a dica
+            var dicaDiv = divQuestao.querySelector(".dica");
+            if (dicaDiv) {
+                dicaDiv.style.display = "block";
+            }
+
+            atualizarResultado();
+        }
+
+        // ================================================================
+        //  ATUALIZAR RESULTADO
+        // ================================================================
+        function atualizarResultado() {
+            document.getElementById("acertos").textContent = estado.acertos;
+            document.getElementById("erros").textContent = estado.erros;
+            document.getElementById("total").textContent = estado.respondidas;
+            
+            document.getElementById("acertos-parcial").textContent = estado.acertos;
+            document.getElementById("erros-parcial").textContent = estado.erros;
+            document.getElementById("respondidas-parcial").textContent = estado.respondidas;
+            document.getElementById("progresso-texto").textContent = estado.respondidas + "/" + questoesData.length;
+            
+            var total = questoesData.length;
+            var progresso = (estado.respondidas / total) * 100;
+            document.getElementById("progress-bar").style.width = progresso + "%";
+        }
+
+        // ================================================================
+        //  REINICIAR
+        // ================================================================
+        function reiniciar() {
+            estado = {
+                respondidas: 0,
+                acertos: 0,
+                erros: 0,
+                bloqueadas: {}
+            };
+            renderizarQuestoes();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        // ================================================================
+        //  INICIALIZAR
+        // ================================================================
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderizarQuestoes);
+        } else {
+            renderizarQuestoes();
+        }
+    </script>
+</body>
+</html>
